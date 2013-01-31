@@ -21,16 +21,14 @@
 (def broadcast-channel (channel))
 
 (defn websocket-activity [ch handshake]
+  (println "websocket started")
   (receive ch
-   (fn [name]
-     (doseq [i (range 100)]   
-      (. Thread (sleep 1000))
-      (let [comment-thread    (html/select (fetch-url @*base-url*) [:table (html/has [:td.doubledash])])
-            ;if you were to retrieve the whole form in the page: (html/select (fetch-url @*base-url*) [:form])
-            what-to-enqueue (render (html/emit* comment-thread))
-            ]
-      (enqueue ch what-to-enqueue)
-        )  ))) )
+           (fn [name]
+             ;(Thread/sleep 500)
+                                        ;(enqueue ch (str "test" name))
+             (siphon (map* #(str name ": " %) ch) broadcast-channel)
+      (siphon broadcast-channel ch)
+             )))
 
 (defn layout [& content]
   (html5 [:head [:title "new page"] (include-js "js/jquery-1.4.3.min.js")]
@@ -40,9 +38,9 @@
 
   ;NB: this doesn't affect the routes below, just the ones in the html files
   (route/files "/"
-   {:root "full-path-to-project/aleph-websockets-ring-example/public"}
+   {:root "/Users/philippotter/src/aleph-websockets-example/public"}
   (route/not-found
-    (file "full-path-to-project/aleph-websockets-ring-example/public/404.html")))
+    (file "/Users/philippotter/src/aleph-websockets-example/public/404.html")))
 
   (GET "/:thread_id" {params :params} 
        (do

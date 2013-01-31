@@ -6,13 +6,16 @@
       $(document).ready(function(){
         function debug(str){ $("#debug").append("<p>"+str+"</p>"); };
  
-        ws = new WebSocket("ws://YOUR-IP:YOUR-PORT/socket/get");
-        ws.onmessage = function(evt) { $("#msg").append("<p>"+evt.data+"</p>"); };
+        ws = new WebSocket("ws://localhost:8080/socket/get");
+        ws.onmessage = function(evt) {
+        $("#msg").append("<p>"+evt.data+"</p>"); };
         //ws.onmessage = function(evt) { $("#msg").('<table><tbody>'+evt.data+'</tbody></table>'); };
         ws.onclose = function() { debug("socket closed"); };
+        ws.onerror = function(error) { console.log(error); }
         ws.onopen = function() {
           debug("Connected...");
           ws.send("hello server");
+          ws.send("msg2");
         };
       });
     </script>
